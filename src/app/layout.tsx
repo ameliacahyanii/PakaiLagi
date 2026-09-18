@@ -18,7 +18,9 @@ export const metadata: Metadata = {
   description: "Project foundation for PakaiLagi",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   return (
     <html
       lang="id"

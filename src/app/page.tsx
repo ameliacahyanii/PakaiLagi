@@ -1,53 +1,169 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Camera,
+  CircleCheck,
+  Leaf,
+  Recycle,
+  Sparkles,
+} from "lucide-react";
+
+const reveal = { hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0 } };
+const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
+
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main className="landing-page">
+      <nav className="landing-nav">
+        <Link href="/" className="brand">
+          <span className="brand-mark">
+            <Leaf size={18} />
+          </span>
+          <span>PakaiLagi</span>
+        </Link>
+        <div className="landing-nav-links">
+          <a href="#cara-kerja">Cara kerja</a>
+          <a href="#dampak">Dampak</a>
+          <Link href="/auth" className="button button-outline">
+            Masuk
+          </Link>
+        </div>
+      </nav>
+      <motion.section className="landing-hero" initial="hidden" animate="visible" variants={stagger}>
+        <motion.div className="landing-hero-copy" variants={reveal}>
+          <p className="eyebrow">Untuk barang kos, rumah, dan komunitasmu</p>
+          <h1>
+            Jangan buru-buru membuang <em>yang masih berarti.</em>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Read the{" "}
-            <a href="https://nextjs.org/docs" className="font-medium text-zinc-950 dark:text-zinc-50">
-              Next.js documentation
-            </a>
-            .
+          <p className="landing-lead">
+            Kipas yang masih menyala, buku yang sudah selesai dipakai, atau
+            kursi yang tidak muat di rumah baru. Temukan orang yang sedang
+            membutuhkannya sebelum barang itu berakhir di tempat sampah.
           </p>
+          <div className="landing-actions">
+            <Link href="/auth" className="button button-primary">
+              Mulai perjalanan <ArrowRight size={17} />
+            </Link>
+            <Link href="#cara-kerja" className="button button-quiet">
+              Lihat cara kerja
+            </Link>
+          </div>
+          <div className="landing-trust">
+            <span>
+              <CircleCheck size={15} /> Transparan
+            </span>
+            <span>
+              <CircleCheck size={15} /> Berbasis komunitas
+            </span>
+            <span>
+              <CircleCheck size={15} /> Lebih bertanggung jawab
+            </span>
+          </div>
+        </motion.div>
+        <motion.div className="landing-orbit" variants={reveal}>
+          <div className="orbit-center">
+            <Leaf size={39} />
+          </div>
+          <div className="orbit-object orbit-chair" aria-hidden="true"><span /></div>
+          <div className="orbit-object orbit-box" aria-hidden="true"><span /></div>
+          <div className="orbit-item orbit-one">
+            <Camera size={19} />
+            <span>Foto</span>
+          </div>
+          <div className="orbit-item orbit-two">
+            <Sparkles size={19} />
+            <span>Cek kondisi</span>
+          </div>
+          <div className="orbit-item orbit-three">
+            <Recycle size={19} />
+            <span>Putar lagi</span>
+          </div>
+        </motion.div>
+      </motion.section>
+      <motion.section className="landing-proof" id="dampak" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger}>
+        <motion.div variants={reveal}>
+          <strong>12</strong>
+          <span>
+            barang sudah
+            <br />
+            mendapat langkah baru
+          </span>
+        </motion.div>
+        <motion.div variants={reveal}>
+          <strong>24.6 kg</strong>
+          <span>
+            material tercatat
+            <br />
+            dalam siklus
+          </span>
+        </motion.div>
+        <motion.div variants={reveal}>
+          <strong>3</strong>
+          <span>
+            jalur pemanfaatan
+            <br />
+            yang tersedia
+          </span>
+        </motion.div>
+      </motion.section>
+      <motion.section className="landing-section" id="cara-kerja" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
+        <div className="landing-section-heading">
+          <p className="eyebrow">Dari tidak terpakai</p>
+          <h2>
+            Berpindah tangan
+            <br />
+            <em>lagi dan lagi.</em>
+          </h2>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image className="dark:invert h-[14px] w-4" src="/vercel.svg" alt="Vercel logomark" width={16} height={14} />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <motion.div className="landing-steps" variants={stagger}>
+          <motion.div variants={reveal}>
+            <span>01</span>
+            <Camera size={22} />
+            <h3>Foto barangmu</h3>
+            <p>
+              Ceritakan barangnya dengan foto dan detail yang jujur.
+            </p>
+          </motion.div>
+          <motion.div variants={reveal}>
+            <span>02</span>
+            <Sparkles size={22} />
+            <h3>Pahami kondisinya</h3>
+            <p>
+              Jawab beberapa pertanyaan supaya orang berikutnya tahu kondisinya.
+            </p>
+          </motion.div>
+          <motion.div variants={reveal}>
+            <span>03</span>
+            <Recycle size={22} />
+            <h3>Pilih langkah terbaik</h3>
+            <p>Jual, tukar, donasi, perbaiki, atau simpan untuk suku cadang.</p>
+          </motion.div>
+        </motion.div>
+      </motion.section>
+      <motion.section className="landing-categories" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
+        <motion.div className="landing-section-heading" variants={reveal}><p className="eyebrow">Yang biasa berpindah tangan</p><h2>Mulai dari barang<br /><em>sehari-hari.</em></h2></motion.div>
+        <motion.div className="category-list" variants={stagger}><motion.div variants={reveal}><strong>01</strong><span>Elektronik kecil</span><small>Kipas, blender, rice cooker</small></motion.div><motion.div variants={reveal}><strong>02</strong><span>Furnitur kos</span><small>Kursi, rak, meja belajar</small></motion.div><motion.div variants={reveal}><strong>03</strong><span>Perlengkapan belajar</span><small>Buku, tas, alat praktikum</small></motion.div><motion.div variants={reveal}><strong>04</strong><span>Tekstil rumah</span><small>Gorden, seprai, kain</small></motion.div></motion.div>
+      </motion.section>
+      <section className="landing-cta">
+        <div>
+          <p className="eyebrow">Satu barang adalah awal</p>
+          <h2>
+            Siap menemukan
+            <br />
+            <em>langkah berikutnya?</em>
+          </h2>
         </div>
-      </main>
-    </div>
+        <Link href="/auth" className="button button-dark">
+          Buat akun gratis <ArrowRight size={17} />
+        </Link>
+      </section>
+      <footer className="landing-footer">
+        <span>© 2026 PakaiLagi</span>
+        <span>Kenali. Alihkan. Lanjutkan.</span>
+      </footer>
+    </main>
   );
 }
