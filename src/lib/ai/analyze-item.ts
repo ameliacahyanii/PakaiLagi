@@ -53,7 +53,8 @@ export function buildDemoAnalysis(): {
       min: 75_000,
       max: 110_000,
       confidence: "medium",
-      reason: "Estimasi awal berdasarkan kategori, kondisi visual, dan fungsi yang perlu dikonfirmasi langsung.",
+      reason:
+        "Estimasi awal berdasarkan kategori, kondisi visual, dan fungsi yang perlu dikonfirmasi langsung.",
     },
   };
 }

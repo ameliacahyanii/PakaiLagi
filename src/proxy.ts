@@ -41,13 +41,23 @@ export async function proxy(request: NextRequest) {
   }
 
   if (user && request.nextUrl.pathname.startsWith("/admin")) {
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-    if (profile?.role !== "admin") return NextResponse.redirect(new URL("/dashboard", request.url));
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (profile?.role !== "admin")
+      return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/items/:path*", "/profile/:path*", "/admin/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/items/:path*",
+    "/profile/:path*",
+    "/admin/:path*",
+  ],
 };

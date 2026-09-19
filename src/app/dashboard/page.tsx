@@ -1,220 +1,215 @@
 "use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
-  ArrowRight,
-  Check,
+  Camera,
+  CirclePlus,
+  Cpu,
   Leaf,
-  Search,
+  Recycle,
+  ShieldCheck,
+  ShoppingBag,
+  Smartphone,
+  Sofa,
   Sparkles,
-  Weight,
+  Verified,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { AppShell } from "@/components/layout/AppShell";
-import { Item, ItemCard } from "@/components/ui/ItemCard";
+import {
+  MarketplaceFooter,
+  MarketplaceHeader,
+} from "@/components/marketplace/MarketplaceShell";
+import { ProductCard } from "@/components/marketplace/ProductCard";
+import { CircularPath, products } from "@/data/marketplace";
+import styles from "@/components/marketplace/Marketplace.module.css";
 
-const items: Item[] = [
-  {
-    id: "1",
-    title: "Kipas meja Cosmos",
-    category: "Elektronik",
-    action: "Donasi",
-    location: "Sleman, DIY",
-    time: "2 jam lalu",
-    accent: "visual-sage",
-    glyph: "◌",
-  },
-  {
-    id: "2",
-    title: "Kursi kerja minimalis",
-    category: "Furnitur",
-    action: "Jual",
-    location: "Jakarta Selatan",
-    time: "5 jam lalu",
-    accent: "visual-sky",
-    glyph: "▱",
-  },
-  {
-    id: "3",
-    title: "Set buku kuliah semester 2",
-    category: "Belajar",
-    action: "Tukar",
-    location: "Bandung",
-    time: "Kemarin",
-    accent: "visual-sand",
-    glyph: "▤",
-  },
+const filters: { label: string; value: "all" | CircularPath }[] = [
+  { label: "Semua", value: "all" },
+  { label: "Beli (Sell)", value: "sell" },
+  { label: "Tukar (Swap)", value: "swap" },
+  { label: "Donasi", value: "donate" },
+  { label: "Perlu Perbaikan", value: "repair" },
 ];
-const categories = ["Semua", "Elektronik", "Furnitur", "Belajar", "Tekstil"];
+const categories = [
+  { label: "Elektronik", count: "3.410 item", icon: Smartphone },
+  { label: "Perabot Rumah", count: "2.180 item", icon: Sofa },
+  { label: "Fashion & Aksesori", count: "4.890 item", icon: Sparkles },
+  { label: "Hobi & Kamera", count: "1.640 item", icon: Camera },
+  { label: "Buku & Media", count: "2.700 item", icon: Cpu },
+];
 
 export default function DashboardPage() {
-  const [selectedCategory, setSelectedCategory] = useState("Semua");
-  const [query, setQuery] = useState("");
-  const filteredItems = useMemo(
-    () =>
-      items.filter(
-        (item) =>
-          (selectedCategory === "Semua" ||
-            item.category === selectedCategory) &&
-          item.title.toLowerCase().includes(query.toLowerCase()),
-      ),
-    [query, selectedCategory],
-  );
-
+  const [filter, setFilter] = useState<"all" | CircularPath>("all");
+  const [sort, setSort] = useState("relevance");
+  const visible = useMemo(() => {
+    const list =
+      filter === "all"
+        ? products
+        : products.filter((p) => p.paths.includes(filter));
+    return [...list].sort((a, b) =>
+      sort === "score-desc"
+        ? b.score - a.score
+        : sort === "price-asc"
+          ? a.price - b.price
+          : sort === "price-desc"
+            ? b.price - a.price
+            : 0,
+    );
+  }, [filter, sort]);
   return (
-    <AppShell>
-      <main className="dashboard-page">
-        <motion.section className="welcome-row" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+    <div className={styles.shell}>
+      <MarketplaceHeader />
+      <main className={styles.main}>
+        <section className={styles.hero}>
           <div>
-            <p className="eyebrow">Ruang kerjamu</p>
+            <span className={styles.eyebrow}>
+              <Verified size={16} /> Marketplace Ekonomi Sirkular Berbasis AI
+            </span>
             <h1>
-              Apa yang mau kamu lanjutkan hari ini? <span>✦</span>
+              Perpanjang usia guna,
+              <br />
+              <span>pilih dampak nyata.</span>
             </h1>
-            <p className="page-subtitle">
-              Cek barangmu atau cari sesuatu dari komunitas sekitar.
-            </p>
-          </div>
-          <Link href="/items/new" className="button button-primary">
-            <Sparkles size={17} /> Analisis barang
-          </Link>
-        </motion.section>
-        <motion.section className="hero-panel" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.5 }}>
-          <div className="hero-copy">
-            <div className="hero-icon">
-              <Leaf size={19} />
-            </div>
-            <p className="eyebrow">Dari kamar ke tangan berikutnya</p>
-            <h2>
-              Barang yang tidak terpakai
-              <br />
-              <em>belum tentu kehilangan arti.</em>
-            </h2>
             <p>
-              Punya barang yang sudah jarang dipakai? Foto dulu, ceritakan
-              kondisinya, lalu pilih langkah yang paling masuk akal.
+              Temukan barang preloved terverifikasi kondisi aslinya, atau
+              salurkan kembali agar bernilai nyata. Transparan lewat audit
+              visual cerdas dan jejak sirkular terukur.
             </p>
-            <Link href="/items/new" className="button button-dark">
-              Tambah barang <ArrowRight size={17} />
-            </Link>
-          </div>
-          <div className="hero-stat">
-            <span className="stat-number">12</span>
-            <span>
-              barang berhasil
-              <br />
-              digunakan kembali
-            </span>
-            <div className="stat-line">
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
+            <div className={styles.actions}>
+              <a href="#katalog" className={styles.primaryButton}>
+                <ShoppingBag size={18} /> Jelajahi Koleksi
+              </a>
+              <Link href="/items/new" className={styles.secondaryButton}>
+                <CirclePlus size={18} /> Jual / Titip Sirkular
+              </Link>
             </div>
           </div>
-        </motion.section>
-        <motion.section className="stat-grid" aria-label="Ringkasan dampak" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.08 } } }}>
-          <motion.div className="stat-card" variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-            <span className="stat-card-icon stat-green">
-              <Leaf size={17} />
-            </span>
-            <div>
-              <strong>8</strong>
-              <span>barang dialihkan</span>
+          <div className={styles.impact}>
+            <div className={styles.impactHeader}>
+              <span>
+                <Recycle size={18} /> LIVE CIRCULAR IMPACT
+              </span>
+              <i className={styles.live} />
             </div>
-            <small>+3 bulan ini</small>
-          </motion.div>
-          <motion.div className="stat-card" variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-            <span className="stat-card-icon stat-yellow">
-              <Weight size={17} />
-            </span>
-            <div>
-              <strong>24.6 kg</strong>
-              <span>berat terselamatkan</span>
+            <p>
+              Agregat kontribusi komunitas PakaiLagi secara aktual hari ini:
+            </p>
+            <div className={styles.metrics}>
+              <div className={styles.metric}>
+                <strong>14.820</strong>
+                <span>Barang Tersalurkan</span>
+              </div>
+              <div className={styles.metric}>
+                <strong>88%</strong>
+                <span>Reuse Rate</span>
+              </div>
+              <div className={styles.metric}>
+                <strong>12.4 Ton</strong>
+                <span>CO₂e Tercegah</span>
+              </div>
             </div>
-            <small>+8.2 kg bulan ini</small>
-          </motion.div>
-          <motion.div className="stat-card" variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
-            <span className="stat-card-icon stat-blue">
-              <Check size={17} />
-            </span>
-            <div>
-              <strong>92%</strong>
-              <span>transaksi selesai</span>
+            <div className={styles.progress}>
+              <div className={styles.ring}>
+                <b>88%</b>
+              </div>
+              <div>
+                <strong>Target Bebas E-Waste Q3</strong>
+                <p>1.280 item dialihkan dari pembuangan akhir pekan ini.</p>
+              </div>
             </div>
-            <small>di atas rata-rata</small>
-          </motion.div>
-        </motion.section>
-        <section className="section-heading">
-          <div>
-            <p className="eyebrow">Komunitas sekitar</p>
-            <h2>Barang yang sedang mencari pemilik baru</h2>
           </div>
-          <Link href="/explore" className="text-link">
-            Lihat semua <ArrowRight size={16} />
-          </Link>
         </section>
-        <section className="explore-toolbar">
-          <div className="category-tabs">
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={selectedCategory === category ? "active" : ""}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
+        <section>
+          <div className={styles.sectionTitle}>
+            <div>
+              <span className={styles.eyebrow}>Jalur Sirkular</span>
+              <h2>Pilih Cara Bertransaksi</h2>
+            </div>
+            <div className={styles.filters}>
+              {filters.map((item) => (
+                <button
+                  key={item.value}
+                  className={`${styles.pill} ${filter === item.value ? styles.pillActive : ""}`}
+                  onClick={() => setFilter(item.value)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className={styles.categories}>
+            {categories.map(({ label, count, icon: Icon }) => (
+              <button className={styles.category} key={label}>
+                <span className={styles.categoryIcon}>
+                  <Icon size={21} />
+                </span>
+                <span>
+                  <strong>{label}</strong>
+                  <small>{count}</small>
+                </span>
               </button>
             ))}
           </div>
-          <label className="search-box">
-            <Search size={17} />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Cari barang..."
-              aria-label="Cari barang"
-            />
-          </label>
         </section>
-        <section className="item-grid">
-          {filteredItems.map((item) => (
-            <ItemCard key={item.id} item={item} />
-          ))}
-        </section>
-        {filteredItems.length === 0 && (
-          <div className="empty-state">
-            Belum ada barang yang cocok dengan pencarianmu.
+        <section className={styles.education}>
+          <div className={styles.educationIntro}>
+            <span>
+              <ShieldCheck />
+            </span>
+            <div>
+              <h3>Mengenal Skor Kondisi PakaiLagi</h3>
+              <p>
+                Audit visi AI dan verifikasi manual menghasilkan skor yang
+                transparan, bukan klaim sepihak.
+              </p>
+            </div>
           </div>
-        )}
-        <section className="how-it-works">
+          <div className={styles.grades}>
+            <div className={styles.grade}>
+              <b>80 - 100</b>
+              <span>Sangat Baik</span>
+            </div>
+            <div className={styles.grade}>
+              <b>65 - 79</b>
+              <span>Kondisi Baik</span>
+            </div>
+            <div className={styles.grade}>
+              <b>45 - 64</b>
+              <span>Cukup / Servis</span>
+            </div>
+          </div>
+        </section>
+        <div className={styles.catalogHeader} id="katalog">
           <div>
-            <p className="eyebrow">Cara kerja PakaiLagi</p>
-            <h2>
-              Satu barang, satu langkah
-              <br />
-              <em>menuju siklus berikutnya.</em>
-            </h2>
+            <h2>Katalog Terverifikasi Terbaru</h2>
+            <p>8 barang baru saja lolos pengujian kondisi.</p>
           </div>
-          <div className="steps">
-            <div>
-              <span>01</span>
-              <strong>Foto barangmu</strong>
-              <p>AI membantu mengenali jenis dan kondisi visual.</p>
-            </div>
-            <div>
-              <span>02</span>
-              <strong>Jawab inspeksi singkat</strong>
-              <p>Jawabanmu membuat rekomendasi lebih bertanggung jawab.</p>
-            </div>
-            <div>
-              <span>03</span>
-              <strong>Tentukan langkah terbaik</strong>
-              <p>Jual, tukar, donasi, atau perbaiki dengan yakin.</p>
-            </div>
+          <select value={sort} onChange={(e) => setSort(e.target.value)}>
+            <option value="relevance">Rekomendasi Sirkular</option>
+            <option value="score-desc">Skor Tertinggi</option>
+            <option value="price-asc">Harga Terendah</option>
+            <option value="price-desc">Harga Tertinggi</option>
+          </select>
+        </div>
+        <div className={styles.grid}>
+          {visible.map((product) => (
+            <ProductCard product={product} key={product.id} />
+          ))}
+        </div>
+        <section className={styles.cta}>
+          <div>
+            <span>EKOSISTEM SIRKULAR TERPERCAYA</span>
+            <h3>Punya barang tak terpakai di rumah?</h3>
+            <p>
+              Unggah foto produk. AI PakaiLagi akan menganalisis kondisi dan
+              menyarankan rute perputaran terbaik.
+            </p>
           </div>
+          <Link className={styles.secondaryButton} href="/items/new">
+            <Leaf size={18} /> Audit Foto Kilat AI
+          </Link>
         </section>
       </main>
-    </AppShell>
+      <MarketplaceFooter />
+    </div>
   );
 }

@@ -1,10 +1,5 @@
 export type CircularAction =
-  | "sell"
-  | "swap"
-  | "donate"
-  | "repair"
-  | "parts"
-  | "recycle";
+  "sell" | "swap" | "donate" | "repair" | "parts" | "recycle";
 
 export type AiAnalysis = {
   category: string;

@@ -87,10 +87,17 @@ export default function AuthPage() {
               ? "Mulai beri langkah baru untuk barang yang kamu punya."
               : "Lanjutkan perjalanan barang-barangmu."}
           </p>
-          <button type="button" className="oauth-button" onClick={handleOAuth} disabled={isLoading}>
+          <button
+            type="button"
+            className="oauth-button"
+            onClick={handleOAuth}
+            disabled={isLoading}
+          >
             <Sparkles size={17} /> Lanjutkan dengan Google
           </button>
-          <div className="auth-divider"><span>atau dengan email</span></div>
+          <div className="auth-divider">
+            <span>atau dengan email</span>
+          </div>
           <form onSubmit={handleSubmit}>
             {isSignUp && (
               <label>

@@ -12,12 +12,23 @@ export default function NewItemPage() {
   const [analysis, setAnalysis] = useState<AnalyzeItemResponse | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState<"upload" | "inspect" | "result" | "published">("upload");
-  const [inspectionAnswers, setInspectionAnswers] = useState<Record<number, boolean>>({});
+  const [step, setStep] = useState<
+    "upload" | "inspect" | "result" | "published"
+  >("upload");
+  const [inspectionAnswers, setInspectionAnswers] = useState<
+    Record<number, boolean>
+  >({});
   const [conditionScore, setConditionScore] = useState(0);
   const [selectedAction, setSelectedAction] = useState("");
-  const progress = { upload: 25, inspect: 50, result: 75, published: 100 }[step];
-  const stepLabel = { upload: "Langkah 01 dari 04", inspect: "Langkah 02 dari 04", result: "Langkah 03 dari 04", published: "Langkah 04 dari 04" }[step];
+  const progress = { upload: 25, inspect: 50, result: 75, published: 100 }[
+    step
+  ];
+  const stepLabel = {
+    upload: "Langkah 01 dari 04",
+    inspect: "Langkah 02 dari 04",
+    result: "Langkah 03 dari 04",
+    published: "Langkah 04 dari 04",
+  }[step];
 
   async function handleAnalyze(file: File | undefined) {
     if (!file) return;
@@ -169,18 +180,131 @@ export default function NewItemPage() {
                 </div>
               ))}
             </div>
-            <div className="price-estimate"><div><span className="result-label">Rentang harga indikatif</span><strong>Rp{analysis.price_range.min.toLocaleString("id-ID")} - Rp{analysis.price_range.max.toLocaleString("id-ID")}</strong></div><small>Keyakinan {analysis.price_range.confidence}. {analysis.price_range.reason}</small></div>
+            <div className="price-estimate">
+              <div>
+                <span className="result-label">Rentang harga indikatif</span>
+                <strong>
+                  Rp{analysis.price_range.min.toLocaleString("id-ID")} - Rp
+                  {analysis.price_range.max.toLocaleString("id-ID")}
+                </strong>
+              </div>
+              <small>
+                Keyakinan {analysis.price_range.confidence}.{" "}
+                {analysis.price_range.reason}
+              </small>
+            </div>
           </section>
         )}
-        {analysis && step === "inspect" && <section className="inspection-panel"><p className="eyebrow">Langkah 02 dari 03</p><h2>Jawab sesuai kondisi sebenarnya.</h2><p className="inspection-intro">Jawabanmu membantu kami memberi rekomendasi yang lebih bertanggung jawab. Tidak ada jawaban yang salah.</p><div className="inspection-list">{analysis.analysis.inspection_questions.map((question, index) => <label key={question} className="inspection-row"><span>{question}</span><input type="checkbox" checked={Boolean(inspectionAnswers[index])} onChange={(event) => setInspectionAnswers((answers) => ({ ...answers, [index]: event.target.checked }))} /></label>)}</div></section>}
-        {analysis && step === "result" && <section className="final-result"><p className="eyebrow">Langkah 03 dari 03 · Selesai dianalisis</p><h2>Barang ini mendapat skor <em>{conditionScore}/100</em></h2><p className="analysis-note">Skor ini transparan dan hanya estimasi awal. Pastikan kondisi barang saat serah terima sesuai deskripsi.</p><div className="final-choice"><span className="result-label">Pilih jalur penyaluran</span><div className="choice-grid">{analysis.recommendations.map((recommendation) => <button type="button" key={recommendation.action} className={selectedAction === recommendation.action ? "choice active" : "choice"} onClick={() => setSelectedAction(recommendation.action)}><strong>{recommendation.action}</strong><span>{recommendation.suitability_score}% cocok</span></button>)}</div></div><div className="price-estimate"><div><span className="result-label">Saran harga untuk jalur jual</span><strong>Rp{analysis.price_range.min.toLocaleString("id-ID")} - Rp{analysis.price_range.max.toLocaleString("id-ID")}</strong></div><small>Harga bukan jaminan pasar. Kamu tetap menentukan harga akhir.</small></div></section>}
-        {step === "published" && <section className="published-panel"><div className="published-check">✓</div><p className="eyebrow">Listing berhasil dibuat</p><h2>Barangmu siap menemukan pemilik berikutnya.</h2><p>Jalur pilihan: <strong>{selectedAction}</strong>. Kamu bisa melanjutkan dengan menunggu klaim dari komunitas.</p><Link href="/dashboard" className="button button-primary">Kembali ke dashboard <ArrowRight size={17} /></Link></section>}
+        {analysis && step === "inspect" && (
+          <section className="inspection-panel">
+            <p className="eyebrow">Langkah 02 dari 03</p>
+            <h2>Jawab sesuai kondisi sebenarnya.</h2>
+            <p className="inspection-intro">
+              Jawabanmu membantu kami memberi rekomendasi yang lebih bertanggung
+              jawab. Tidak ada jawaban yang salah.
+            </p>
+            <div className="inspection-list">
+              {analysis.analysis.inspection_questions.map((question, index) => (
+                <label key={question} className="inspection-row">
+                  <span>{question}</span>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(inspectionAnswers[index])}
+                    onChange={(event) =>
+                      setInspectionAnswers((answers) => ({
+                        ...answers,
+                        [index]: event.target.checked,
+                      }))
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          </section>
+        )}
+        {analysis && step === "result" && (
+          <section className="final-result">
+            <p className="eyebrow">Langkah 03 dari 03 · Selesai dianalisis</p>
+            <h2>
+              Barang ini mendapat skor <em>{conditionScore}/100</em>
+            </h2>
+            <p className="analysis-note">
+              Skor ini transparan dan hanya estimasi awal. Pastikan kondisi
+              barang saat serah terima sesuai deskripsi.
+            </p>
+            <div className="final-choice">
+              <span className="result-label">Pilih jalur penyaluran</span>
+              <div className="choice-grid">
+                {analysis.recommendations.map((recommendation) => (
+                  <button
+                    type="button"
+                    key={recommendation.action}
+                    className={
+                      selectedAction === recommendation.action
+                        ? "choice active"
+                        : "choice"
+                    }
+                    onClick={() => setSelectedAction(recommendation.action)}
+                  >
+                    <strong>{recommendation.action}</strong>
+                    <span>{recommendation.suitability_score}% cocok</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="price-estimate">
+              <div>
+                <span className="result-label">
+                  Saran harga untuk jalur jual
+                </span>
+                <strong>
+                  Rp{analysis.price_range.min.toLocaleString("id-ID")} - Rp
+                  {analysis.price_range.max.toLocaleString("id-ID")}
+                </strong>
+              </div>
+              <small>
+                Harga bukan jaminan pasar. Kamu tetap menentukan harga akhir.
+              </small>
+            </div>
+          </section>
+        )}
+        {step === "published" && (
+          <section className="published-panel">
+            <div className="published-check">✓</div>
+            <p className="eyebrow">Listing berhasil dibuat</p>
+            <h2>Barangmu siap menemukan pemilik berikutnya.</h2>
+            <p>
+              Jalur pilihan: <strong>{selectedAction}</strong>. Kamu bisa
+              melanjutkan dengan menunggu klaim dari komunitas.
+            </p>
+            <Link href="/dashboard" className="button button-primary">
+              Kembali ke dashboard <ArrowRight size={17} />
+            </Link>
+          </section>
+        )}
         <div className="form-actions">
           <Link href="/dashboard" className="button button-ghost">
             Simpan nanti
           </Link>
-          {step === "inspect" && <button type="button" className="button button-primary" onClick={completeInspection}>Lihat rekomendasi <ArrowRight size={17} /></button>}
-          {step === "result" && <button type="button" className="button button-primary" disabled={!selectedAction} onClick={() => setStep("published")}>Publikasikan listing <ArrowRight size={17} /></button>}
+          {step === "inspect" && (
+            <button
+              type="button"
+              className="button button-primary"
+              onClick={completeInspection}
+            >
+              Lihat rekomendasi <ArrowRight size={17} />
+            </button>
+          )}
+          {step === "result" && (
+            <button
+              type="button"
+              className="button button-primary"
+              disabled={!selectedAction}
+              onClick={() => setStep("published")}
+            >
+              Publikasikan listing <ArrowRight size={17} />
+            </button>
+          )}
         </div>
       </main>
     </AppShell>

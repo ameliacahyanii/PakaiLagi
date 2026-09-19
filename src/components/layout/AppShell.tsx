@@ -27,11 +27,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [initial, setInitial] = useState("P");
 
   useEffect(() => {
-    void createClient().auth.getUser().then(({ data }) => {
-      const name = data.user?.user_metadata.full_name ?? data.user?.email?.split("@")[0] ?? "Pengguna";
-      setDisplayName(name);
-      setInitial(name.charAt(0).toUpperCase());
-    });
+    void createClient()
+      .auth.getUser()
+      .then(({ data }) => {
+        const name =
+          data.user?.user_metadata.full_name ??
+          data.user?.email?.split("@")[0] ??
+          "Pengguna";
+        setDisplayName(name);
+        setInitial(name.charAt(0).toUpperCase());
+      });
   }, []);
 
   async function handleSignOut() {
@@ -57,7 +62,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="sidebar-section-label">Ruang kerja</div>
         <nav className="sidebar-nav" aria-label="Navigasi utama">
           {navigation.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href} className={`sidebar-link ${pathname === href ? "active" : ""}`}>
+            <Link
+              key={href}
+              href={href}
+              className={`sidebar-link ${pathname === href ? "active" : ""}`}
+            >
               <Icon size={18} />
               {label}
             </Link>
@@ -78,7 +87,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <UserRound size={18} />
             Profil saya
           </Link>
-          <button type="button" className="sidebar-link sidebar-button" onClick={handleSignOut}>
+          <button
+            type="button"
+            className="sidebar-link sidebar-button"
+            onClick={handleSignOut}
+          >
             <LogOut size={18} />
             Keluar
           </button>
@@ -103,7 +116,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Plus size={17} /> Tambah barang
             </Link>
-            <Link href="/profile" className="avatar" aria-label={`Buka profil ${displayName}`}>
+            <Link
+              href="/profile"
+              className="avatar"
+              aria-label={`Buka profil ${displayName}`}
+            >
               {initial}
             </Link>
           </div>

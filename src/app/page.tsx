@@ -32,7 +32,12 @@ export default function LandingPage() {
           </Link>
         </div>
       </nav>
-      <motion.section className="landing-hero" initial="hidden" animate="visible" variants={stagger}>
+      <motion.section
+        className="landing-hero"
+        initial="hidden"
+        animate="visible"
+        variants={stagger}
+      >
         <motion.div className="landing-hero-copy" variants={reveal}>
           <p className="eyebrow">Untuk barang kos, rumah, dan komunitasmu</p>
           <h1>
@@ -67,8 +72,12 @@ export default function LandingPage() {
           <div className="orbit-center">
             <Leaf size={39} />
           </div>
-          <div className="orbit-object orbit-chair" aria-hidden="true"><span /></div>
-          <div className="orbit-object orbit-box" aria-hidden="true"><span /></div>
+          <div className="orbit-object orbit-chair" aria-hidden="true">
+            <span />
+          </div>
+          <div className="orbit-object orbit-box" aria-hidden="true">
+            <span />
+          </div>
           <div className="orbit-item orbit-one">
             <Camera size={19} />
             <span>Foto</span>
@@ -83,7 +92,14 @@ export default function LandingPage() {
           </div>
         </motion.div>
       </motion.section>
-      <motion.section className="landing-proof" id="dampak" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger}>
+      <motion.section
+        className="landing-proof"
+        id="dampak"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.25 }}
+        variants={stagger}
+      >
         <motion.div variants={reveal}>
           <strong>12</strong>
           <span>
@@ -109,7 +125,14 @@ export default function LandingPage() {
           </span>
         </motion.div>
       </motion.section>
-      <motion.section className="landing-section" id="cara-kerja" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
+      <motion.section
+        className="landing-section"
+        id="cara-kerja"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={stagger}
+      >
         <div className="landing-section-heading">
           <p className="eyebrow">Dari tidak terpakai</p>
           <h2>
@@ -123,9 +146,7 @@ export default function LandingPage() {
             <span>01</span>
             <Camera size={22} />
             <h3>Foto barangmu</h3>
-            <p>
-              Ceritakan barangnya dengan foto dan detail yang jujur.
-            </p>
+            <p>Ceritakan barangnya dengan foto dan detail yang jujur.</p>
           </motion.div>
           <motion.div variants={reveal}>
             <span>02</span>
@@ -143,9 +164,43 @@ export default function LandingPage() {
           </motion.div>
         </motion.div>
       </motion.section>
-      <motion.section className="landing-categories" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
-        <motion.div className="landing-section-heading" variants={reveal}><p className="eyebrow">Yang biasa berpindah tangan</p><h2>Mulai dari barang<br /><em>sehari-hari.</em></h2></motion.div>
-        <motion.div className="category-list" variants={stagger}><motion.div variants={reveal}><strong>01</strong><span>Elektronik kecil</span><small>Kipas, blender, rice cooker</small></motion.div><motion.div variants={reveal}><strong>02</strong><span>Furnitur kos</span><small>Kursi, rak, meja belajar</small></motion.div><motion.div variants={reveal}><strong>03</strong><span>Perlengkapan belajar</span><small>Buku, tas, alat praktikum</small></motion.div><motion.div variants={reveal}><strong>04</strong><span>Tekstil rumah</span><small>Gorden, seprai, kain</small></motion.div></motion.div>
+      <motion.section
+        className="landing-categories"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={stagger}
+      >
+        <motion.div className="landing-section-heading" variants={reveal}>
+          <p className="eyebrow">Yang biasa berpindah tangan</p>
+          <h2>
+            Mulai dari barang
+            <br />
+            <em>sehari-hari.</em>
+          </h2>
+        </motion.div>
+        <motion.div className="category-list" variants={stagger}>
+          <motion.div variants={reveal}>
+            <strong>01</strong>
+            <span>Elektronik kecil</span>
+            <small>Kipas, blender, rice cooker</small>
+          </motion.div>
+          <motion.div variants={reveal}>
+            <strong>02</strong>
+            <span>Furnitur kos</span>
+            <small>Kursi, rak, meja belajar</small>
+          </motion.div>
+          <motion.div variants={reveal}>
+            <strong>03</strong>
+            <span>Perlengkapan belajar</span>
+            <small>Buku, tas, alat praktikum</small>
+          </motion.div>
+          <motion.div variants={reveal}>
+            <strong>04</strong>
+            <span>Tekstil rumah</span>
+            <small>Gorden, seprai, kain</small>
+          </motion.div>
+        </motion.div>
       </motion.section>
       <section className="landing-cta">
         <div>
