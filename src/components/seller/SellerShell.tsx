@@ -5,7 +5,6 @@ import {
   Box,
   PlusCircle,
   Recycle,
-  ScanLine,
   Truck,
 } from "lucide-react";
 import styles from "./SellerWorkspace.module.css";
@@ -49,14 +48,14 @@ export function SellerShell({
           </Link>
           <Link
             className={active === "orders" ? styles.active : ""}
-            href="/status"
+            href="/seller/orders"
           >
             <Truck size={18} />
             Pesanan & Logistik
           </Link>
           <Link
             className={active === "routes" ? styles.active : ""}
-            href="/explore"
+            href="/seller/routes"
           >
             <Recycle size={18} />
             Rute Swap & Repair
