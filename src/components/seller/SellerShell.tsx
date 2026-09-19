@@ -41,7 +41,7 @@ export function SellerShell({
           </Link>
           <Link
             className={active === "inventory" ? styles.active : ""}
-            href="/seller/scan"
+            href="/seller/inventory"
           >
             <Box size={18} />
             Inventaris & AI Audit
