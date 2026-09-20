@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, Leaf, Menu, Search, Store, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 // Font: isi lewat next/font di layout.tsx (--font-display). Fallback Georgia.
 const display = "font-[family-name:var(--font-display,Georgia,serif)]";
@@ -26,13 +27,7 @@ function Brand({ dark = false }: { dark?: boolean }) {
         dark ? `!text-white ${focusDark}` : `!text-[#111827] ${focus}`
       }`}
     >
-      <span
-        className={`grid h-9 w-9 place-items-center rounded-xl ${
-          dark ? "bg-[#E2BC6B] text-[#111827]" : "bg-[#0B4F3F] text-white"
-        }`}
-      >
-        <Leaf size={19} />
-      </span>
+      <Image src="/logo-pakailagi.svg" alt="" width={24} height={24} />
       PakaiLagi
     </Link>
   );

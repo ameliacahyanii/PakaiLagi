@@ -74,6 +74,46 @@ const askingPrice = 4_750_000;
 const negoDiscount = 250_000;
 const agreedPrice = askingPrice - negoDiscount;
 
+function stepStatus(step: number, confirmed: boolean) {
+  if (step === 1) return "done";
+  if (step === 2) return confirmed ? "done" : "current";
+  return confirmed ? "done" : "upcoming";
+}
+
+function StepIndicator({
+  number,
+  label,
+  confirmed,
+}: {
+  number: number;
+  label: string;
+  confirmed: boolean;
+}) {
+  const status = stepStatus(number, confirmed);
+  return (
+    <span
+      className={`inline-flex items-center gap-2 ${
+        status === "upcoming"
+          ? "text-[#5B6675]"
+          : "font-semibold text-[#0B4F3F]"
+      }`}
+    >
+      <span
+        className={`grid h-5 w-5 place-items-center rounded-full text-xs ${
+          status === "done"
+            ? "bg-[#0B4F3F] text-white"
+            : status === "current"
+              ? "border-2 border-[#0B4F3F] text-[#0B4F3F]"
+              : "border border-[#CBD0D6] text-[#5B6675]"
+        }`}
+      >
+        {status === "done" ? <Check size={12} /> : number}
+      </span>
+      {label}
+    </span>
+  );
+}
+
 export default function CheckoutPage() {
   const [handover, setHandover] = useState("hub");
   const [agreed, setAgreed] = useState(false);
@@ -164,38 +204,6 @@ export default function CheckoutPage() {
     }
   }
 
-  const stepStatus = (step: number) => {
-    if (step === 1) return "done";
-    if (step === 2) return confirmed ? "done" : "current";
-    return confirmed ? "done" : "upcoming";
-  };
-
-  function StepIndicator({ number, label }: { number: number; label: string }) {
-    const status = stepStatus(number);
-    return (
-      <span
-        className={`inline-flex items-center gap-2 ${
-          status === "upcoming"
-            ? "text-[#5B6675]"
-            : "font-semibold text-[#0B4F3F]"
-        }`}
-      >
-        <span
-          className={`grid h-5 w-5 place-items-center rounded-full text-xs ${
-            status === "done"
-              ? "bg-[#0B4F3F] text-white"
-              : status === "current"
-                ? "border-2 border-[#0B4F3F] text-[#0B4F3F]"
-                : "border border-[#CBD0D6] text-[#5B6675]"
-          }`}
-        >
-          {status === "done" ? <Check size={12} /> : number}
-        </span>
-        {label}
-      </span>
-    );
-  }
-
   return (
     <div
       className={`${body} min-h-screen bg-[#F7F8F7] text-[#111827] antialiased`}
@@ -212,11 +220,23 @@ export default function CheckoutPage() {
             <span className="text-sm text-[#5B6675]">#ORDER-SIM-88219</span>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-sm text-[#5B6675]">
-            <StepIndicactor number={1} label="Verifikasi Pesanan" />
+            <StepIndicator
+              number={1}
+              label="Verifikasi Pesanan"
+              confirmed={confirmed}
+            />
             <span>-</span>
-            <StepIndicator number={2} label="Jadwal Serah Terima" />
+            <StepIndicator
+              number={2}
+              label="Jadwal Serah Terima"
+              confirmed={confirmed}
+            />
             <span>-</span>
-            <StepIndicator number={3} label="Konfirmasi Kode" />
+            <StepIndicator
+              number={3}
+              label="Konfirmasi Kode"
+              confirmed={confirmed}
+            />
           </div>
         </div>
 

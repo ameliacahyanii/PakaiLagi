@@ -20,7 +20,7 @@ import {
   useMemo,
   useRef,
   useState,
-  type KeyboardEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import {
   MarketplaceFooter,
@@ -159,7 +159,7 @@ function SortMenu({
     }
   }, [open]);
 
-  const onKeyDown = (e: KeyboardEvent) => {
+  const onKeyDown = (e: ReactKeyboardEvent) => {
     if (e.key === "Escape" && open) {
       setOpen(false);
       trigger.current?.focus();

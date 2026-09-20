@@ -5,6 +5,7 @@ import { ArrowLeft, Leaf, LoaderCircle, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function AuthPage() {
       <div className="auth-art">
         <Link href="/" className="brand">
           <span className="brand-mark">
-            <Leaf size={18} />
+            <Image src="/logo-pakailagi.svg" alt="" width={18} height={18} />
           </span>
           <span>PakaiLagi</span>
         </Link>

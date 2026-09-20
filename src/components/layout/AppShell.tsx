@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 
 const navigation = [
   { href: "/dashboard", label: "Ringkasan", icon: LayoutDashboard },
@@ -54,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           aria-label="PakaiLagi dashboard"
         >
           <span className="brand-mark">
-            <Leaf size={18} strokeWidth={2.5} />
+            <Image src="/logo-pakailagi.svg" alt="" width={18} height={18} />
           </span>
           <span>PakaiLagi</span>
         </Link>
@@ -102,7 +103,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <header className="topbar">
           <div className="mobile-brand brand">
             <span className="brand-mark">
-              <Leaf size={18} />
+              <Image src="/logo-pakailagi.svg" alt="" width={18} height={18} />
             </span>
             <span>PakaiLagi</span>
           </div>
