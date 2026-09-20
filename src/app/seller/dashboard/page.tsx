@@ -2,30 +2,79 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Brain,
-  CheckCircle,
-  CloudCog,
+  ClipboardList,
   Eye,
   Filter,
   Leaf,
   ScanLine,
   Send,
+  ShieldCheck,
   Store,
-  Truck,
   TriangleAlert,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SellerShell } from "@/components/seller/SellerShell";
 import { inventoryItems, InventoryStatus } from "@/data/seller-workspace-data";
-import styles from "@/components/seller/SellerWorkspace.module.css";
+
+/* ---------- Style tokens — identik dengan halaman lain ---------- */
+const display = "font-[family-name:var(--font-display,Georgia,serif)]";
+const focus =
+  "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#12705A]";
+const card =
+  "rounded-2xl border border-[#E4E7EB] bg-white shadow-[0_1px_2px_rgba(17,24,39,0.04),0_10px_28px_-14px_rgba(17,24,39,0.10)]";
+const btn = `inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold no-underline transition-colors`;
+const btnPrimary = `${btn} ${focus} bg-[#0B4F3F] !text-white hover:bg-[#083D31]`;
+const btnOutline = `${btn} ${focus} border border-[#E4E7EB] !text-[#111827] hover:border-[#0B4F3F]`;
+
 const money = (value: number) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(value);
+
+const carbonAvoided = 142.8;
+const carbonTarget = 200;
+const carbonPercent = Math.round((carbonAvoided / carbonTarget) * 100);
+
+const metrics = [
+  {
+    label: "Listing Aktif",
+    value: "8",
+    foot: "3 menunggu pembeli",
+    icon: Store,
+  },
+  {
+    label: "Perlu Tindakan",
+    value: "3",
+    foot: "1 verifikasi inspeksi",
+    icon: TriangleAlert,
+  },
+  {
+    label: "Barang Tersalurkan",
+    value: "24",
+    foot: "18 jual · 4 tukar · 2 donasi",
+    icon: Send,
+  },
+  {
+    label: "Reuse & Recovery",
+    value: "91,5%",
+    foot: `${carbonAvoided} kg CO₂e dicegah`,
+    icon: Leaf,
+  },
+];
+
+const filters: { id: InventoryStatus | "all"; label: string }[] = [
+  { id: "all", label: "Semua" },
+  { id: "shipping" as InventoryStatus, label: "Perlu Tindakan" },
+  { id: "active" as InventoryStatus, label: "Aktif" },
+  { id: "draft" as InventoryStatus, label: "Draf" },
+];
+
 export default function SellerDashboard() {
   const [filter, setFilter] = useState<InventoryStatus | "all">("all");
+  const [toast, setToast] = useState("");
+
   const visible = useMemo(
     () =>
       inventoryItems.filter(
@@ -33,182 +82,262 @@ export default function SellerDashboard() {
       ),
     [filter],
   );
+
+  function notify(message: string) {
+    setToast(message);
+    setTimeout(() => setToast(""), 2500);
+  }
+
   return (
     <SellerShell>
-      <main className={styles.content}>
-        <div className={styles.pageHead}>
+      <main className="flex flex-col gap-8 px-4 py-8 sm:px-6 sm:py-10">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1>Selamat datang kembali, Budi!</h1>
-            <p>Kelola inventaris sirkular dan pantau dampak lingkungan toko.</p>
+            <h1 className={`${display} text-2xl font-normal sm:text-3xl`}>
+              Selamat datang kembali, Budi!
+            </h1>
+            <p className="mt-1 text-[#5B6675]">
+              Kelola inventaris sirkular dan pantau dampak lingkungan toko.
+            </p>
           </div>
-          <div className={styles.actions}>
-            <button className={styles.secondary}>
-              <Filter size={17} />
-              Filter Laporan
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() =>
+                notify(
+                  "Laporan lengkap akan tersedia setelah listing bertambah.",
+                )
+              }
+              className={btnOutline}
+            >
+              <Filter size={16} /> Filter Laporan
             </button>
-            <Link className={styles.primary} href="/seller/scan">
-              <ScanLine size={17} />
-              Scan Barang AI
+            <Link href="/seller/scan" className={btnPrimary}>
+              <ScanLine size={16} /> Scan Barang AI
             </Link>
           </div>
         </div>
-        <section className={styles.metrics}>
-          {[
-            {
-              label: "Listing Aktif",
-              value: "8",
-              foot: "3 menunggu pembeli",
-              icon: Store,
-            },
-            {
-              label: "Perlu Tindakan",
-              value: "3",
-              foot: "1 verifikasi inspeksi",
-              icon: TriangleAlert,
-            },
-            {
-              label: "Barang Tersalurkan",
-              value: "24",
-              foot: "18 jual • 4 swap • 2 donasi",
-              icon: Send,
-            },
-            {
-              label: "Reuse & Recovery",
-              value: "91,5%",
-              foot: "142 kg CO₂e dicegah",
-              icon: Leaf,
-            },
-          ].map(({ label, value, foot, icon: Icon }) => (
-            <div className={styles.metric} key={label}>
-              <div className={styles.metricTop}>
-                <span>{label}</span>
-                <Icon color="#005144" />
+
+        {/* ============ Metrik ============ */}
+        <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {metrics.map(({ label, value, foot, icon: Icon }) => (
+            <div key={label} className={`${card} p-5`}>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-[#5B6675]">
+                  {label}
+                </span>
+                <Icon size={18} className="text-[#0B4F3F]" />
               </div>
-              <strong>{value}</strong>
-              <div className={styles.metricFooter}>{foot}</div>
+              <strong className={`${display} mt-2 block text-2xl font-normal`}>
+                {value}
+              </strong>
+              <div className="mt-1 text-xs text-[#5B6675]">{foot}</div>
             </div>
           ))}
         </section>
-        <section className={`${styles.card} ${styles.banner}`}>
+
+        {/* ============ Banner draf siap ditinjau ============ */}
+        <section
+          className={`${card} flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between`}
+        >
           <div>
-            <span className={styles.badge}>
-              AI Quality Diagnostics • #AI-88391
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E6F2ED] px-2.5 py-1 text-xs font-semibold text-[#0B4F3F]">
+              Inspeksi Adaptif · #AI-88391
             </span>
-            <h2>Draf Analisis AI Siap Ditinjau</h2>
-            <p>
-              MacBook Air M1 2020 memperoleh skor 82. Periksa rute sirkular dan
-              publikasikan.
+            <h2 className={`${display} mt-2 text-xl font-normal`}>
+              Draf Analisis Siap Ditinjau
+            </h2>
+            <p className="mt-1 text-sm text-[#5B6675]">
+              Rak Buku Kayu 3 Susun memperoleh skor kondisi 82. Periksa jalur
+              sirkular yang disarankan dan publikasikan.
             </p>
           </div>
-          <div className={styles.actions}>
-            <button className={styles.secondary}>Abaikan</button>
-            <Link className={styles.primary} href="/seller/scan">
-              Tinjau & Publikasikan <ArrowRight size={17} />
+          <div className="flex shrink-0 items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => notify("Draf diabaikan.")}
+              className={btnOutline}
+            >
+              Abaikan
+            </button>
+            <Link href="/items/rak-buku-kayu-3-susun" className={btnPrimary}>
+              Tinjau & Publikasikan <ArrowRight size={16} />
             </Link>
           </div>
         </section>
+
+        {/* ============ Tabel inventaris ============ */}
         <section>
-          <div className={styles.tableHead}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2>Inventaris Barang Terkini</h2>
-              <span>{visible.length} item</span>
+              <h2 className={`${display} text-xl font-normal`}>
+                Inventaris Barang Terkini
+              </h2>
+              <span className="text-sm text-[#5B6675]">
+                {visible.length} item
+              </span>
             </div>
-            <div className={styles.filters}>
-              {[
-                { id: "all", label: "Semua" },
-                { id: "shipping", label: "Perlu Tindakan" },
-                { id: "active", label: "Aktif" },
-                { id: "draft", label: "Draf" },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  className={filter === item.id ? styles.selected : ""}
-                  onClick={() => setFilter(item.id as InventoryStatus | "all")}
-                >
-                  {item.label}
-                </button>
-              ))}
+            <div className="inline-flex gap-1 rounded-xl bg-[#ECEEEB] p-1">
+              {filters.map((item) => {
+                const active = filter === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setFilter(item.id)}
+                    className={`min-h-9 shrink-0 cursor-pointer rounded-lg px-3.5 text-sm font-semibold whitespace-nowrap transition-all ${focus} ${
+                      active
+                        ? "bg-white text-[#111827] shadow-[0_1px_3px_rgba(17,24,39,0.12)]"
+                        : "text-[#5B6675] hover:text-[#111827]"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
+
+          <div className={`${card} mt-4 overflow-x-auto`}>
+            <table className="w-full min-w-[720px] border-collapse text-sm">
               <thead>
-                <tr>
-                  <th>Foto & Nama</th>
-                  <th>Kategori</th>
-                  <th>Jalur</th>
-                  <th>Skor</th>
-                  <th>Harga</th>
-                  <th>Status</th>
-                  <th>Aksi</th>
+                <tr className="border-b border-[#E4E7EB] text-left text-xs text-[#5B6675]">
+                  <th className="px-4 py-3 font-semibold">Foto & Nama</th>
+                  <th className="px-4 py-3 font-semibold">Kategori</th>
+                  <th className="px-4 py-3 font-semibold">Jalur</th>
+                  <th className="px-4 py-3 font-semibold">Skor</th>
+                  <th className="px-4 py-3 font-semibold">Harga</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
+                  <th className="px-4 py-3 font-semibold">Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {visible.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <div className={styles.product}>
-                        <img src={item.image} alt={item.name} />
-                        <div>
-                          <b>{item.name}</b>
-                          <small>{item.note}</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td>{item.category}</td>
-                    <td>
-                      <span className={styles.route}>{item.route}</span>
-                    </td>
-                    <td>
-                      <span className={styles.score}>
-                        {item.score} • {item.condition}
-                      </span>
-                    </td>
-                    <td className={styles.price}>{money(item.price)}</td>
-                    <td>
-                      <span className={styles.status}>{item.statusLabel}</span>
-                    </td>
-                    <td>
-                      <button className={styles.iconButton}>
-                        <Eye size={16} />
-                      </button>
+                {visible.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className="px-4 py-10 text-center text-[#5B6675]"
+                    >
+                      Belum ada barang pada status ini.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  visible.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b border-[#EDEFEC] last:border-0"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="h-11 w-11 shrink-0 rounded-lg object-cover"
+                          />
+                          <div>
+                            <b className="block">{item.name}</b>
+                            <small className="text-[#5B6675]">
+                              {item.note}
+                            </small>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-[#5B6675]">
+                        {item.category}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full bg-[#F3F4F2] px-2.5 py-1 text-xs font-semibold text-[#5B6675]">
+                          {item.route}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-[#5B6675]">
+                        {item.score} · {item.condition}
+                      </td>
+                      <td className="px-4 py-3 font-semibold">
+                        {money(item.price)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full bg-[#E6F2ED] px-2.5 py-1 text-xs font-semibold text-[#0B4F3F]">
+                          {item.statusLabel}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/items/${item.id}`}
+                          aria-label={`Lihat ${item.name}`}
+                          className={`grid h-9 w-9 place-items-center rounded-lg border border-[#E4E7EB] !text-[#111827] no-underline transition-colors hover:border-[#0B4F3F] ${focus}`}
+                        >
+                          <Eye size={16} />
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </section>
-        <section className={styles.bottomGrid}>
-          <div className={styles.card}>
-            <div className={styles.between}>
-              <h3>Jejak Karbon Dihindari</h3>
-              <Leaf color="#005144" />
+
+        {/* ============ Ringkasan bawah ============ */}
+        <section className="grid gap-4 sm:grid-cols-3">
+          <div className={`${card} p-6`}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Jejak Karbon Dihindari</h3>
+              <Leaf size={18} className="text-[#0B4F3F]" />
             </div>
-            <strong>142,8 kg CO₂e</strong>
-            <p>71% dari target tahunan 200 kg.</p>
-            <div className={styles.progress}>
-              <i style={{ width: "71%" }} />
+            <strong className={`${display} mt-2 block text-2xl font-normal`}>
+              {carbonAvoided} kg CO₂e
+            </strong>
+            <p className="mt-1 text-sm text-[#5B6675]">
+              {carbonPercent}% dari target tahunan {carbonTarget} kg.
+            </p>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#EDEFEC]">
+              <div
+                className="h-full rounded-full bg-[#0B4F3F]"
+                style={{ width: `${carbonPercent}%` }}
+              />
             </div>
           </div>
-          <div className={styles.card}>
-            <div className={styles.between}>
-              <h3>AI Inspector Engine</h3>
-              <Brain color="#3478b8" />
+
+          <div className={`${card} p-6`}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Bantuan Inspeksi Adaptif</h3>
+              <ClipboardList size={18} className="text-[#0B4F3F]" />
             </div>
-            <p>Model inspeksi fisik dan depresiasi berjalan real-time.</p>
-            <b>98,4% Akurasi Penilaian</b>
+            <p className="mt-2 text-sm text-[#5B6675]">
+              Menyusun pertanyaan inspeksi sesuai kategori barang dan menandai
+              hal yang perlu kamu periksa manual sebelum publikasi.
+            </p>
+            <b className="mt-2 block text-sm">
+              Bukan pengganti pemeriksaan fisik
+            </b>
           </div>
-          <div className={styles.card}>
-            <div className={styles.between}>
-              <h3>Standar Kejujuran</h3>
-              <CheckCircle color="#e5a93d" />
+
+          <div className={`${card} p-6`}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Standar Kejujuran</h3>
+              <ShieldCheck size={18} className="text-[#C29A4B]" />
             </div>
-            <p>Transparansi cacat fisik meningkatkan perlindungan transaksi.</p>
-            <span className={styles.badge}>Status: Mitra Unggul</span>
+            <p className="mt-2 text-sm text-[#5B6675]">
+              Transparansi cacat fisik meningkatkan kepercayaan pembeli pada
+              listing kamu.
+            </p>
+            <span className="mt-2 inline-block rounded-full bg-[#E6F2ED] px-2.5 py-1 text-xs font-semibold text-[#0B4F3F]">
+              Status: Mitra Unggul
+            </span>
           </div>
         </section>
       </main>
+
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[#111827] px-4 py-2.5 text-sm font-medium text-white shadow-lg"
+        >
+          {toast}
+        </div>
+      )}
     </SellerShell>
   );
 }

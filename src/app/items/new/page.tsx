@@ -302,7 +302,7 @@ export default function NewItemPage() {
               disabled={!selectedAction}
               onClick={() => setStep("published")}
             >
-              Publikasikan listing <ArrowRight size={17} />
+              Publikasi lisiting <ArrowRight size={17} />
             </button>
           )}
         </div>

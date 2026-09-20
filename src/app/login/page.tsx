@@ -1,24 +1,35 @@
 "use client";
 import Link from "next/link";
-import {
-  ArrowRight,
-  AtSign,
-  Eye,
-  EyeOff,
-  GraduationCap,
-  Lock,
-  ShieldCheck,
-} from "lucide-react";
-import { FormEvent, useState } from "react";
+import { ArrowRight, AtSign, Loader2, Lock, ShieldCheck } from "lucide-react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthShell } from "@/components/auth/AuthShell";
+import { AuthInput, PasswordToggle } from "@/components/auth/AuthField";
 import { GoogleIcon } from "@/components/auth/GoogleIcon";
-import styles from "@/components/auth/Auth.module.css";
+import {
+  btnPrimary,
+  btnSecondary,
+  card,
+  display,
+  focus,
+} from "@/components/ui/tokens";
+import { useToast } from "@/components/ui/useToast";
+
 export default function LoginPage() {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { notify, toast } = useToast();
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -32,84 +43,125 @@ export default function LoginPage() {
     }
     setError("");
     setLoading(true);
-    setTimeout(() => router.push("/dashboard"), 700);
+    timer.current = setTimeout(() => router.push("/"), 700);
   }
+
   return (
     <AuthShell mode="login">
-      <section className={styles.card}>
-        <div className={styles.intro}>
-          <h1>Selamat Datang Kembali</h1>
-          <p>
-            Masuk untuk melanjutkan transaksi sirkular dan mengelola inventaris.
-          </p>
+      <section className={`${card} p-6 sm:p-8`}>
+        <h1
+          className={`${display} text-[2rem] leading-[1.1] font-normal tracking-[-0.01em]`}
+        >
+          Selamat datang kembali
+        </h1>
+        <p className="mt-2 leading-relaxed text-[#5B6675]">
+          Masuk untuk melanjutkan transaksi sirkular dan mengelola inventaris.
+        </p>
+
+        <button
+          type="button"
+          onClick={() => notify("Login Google belum tersedia di versi contoh.")}
+          className={`${btnSecondary} mt-6 !min-h-12 sm:!w-full`}
+        >
+          <GoogleIcon />
+          Lanjutkan dengan Google
+        </button>
+
+        <div className="my-6 flex items-center gap-3 text-xs text-[#5B6675]">
+          <span className="h-px flex-1 bg-[#E4E7EB]" />
+          atau masuk dengan email
+          <span className="h-px flex-1 bg-[#E4E7EB]" />
         </div>
-        <div className={styles.socials}>
-          <button className={styles.socialButton}>
-            <GoogleIcon />
-            Lanjutkan dengan Google
-          </button>
-        </div>
-        <div className={styles.divider}>atau masuk dengan email</div>
-        <form className={styles.form} onSubmit={submit}>
-          <label className={styles.field}>
-            Email atau Nomor Ponsel
-            <div className={`${styles.inputWrap} ${styles.withLeftIcon}`}>
-              <AtSign className={styles.inputIcon} size={18} />
-              <input
-                name="identifier"
-                placeholder="nama@email.com atau 0812xxxx"
-                autoComplete="username"
-                required
-              />
-            </div>
-          </label>
-          <label className={styles.field}>
-            <span className={styles.between}>
-              <span>Kata Sandi</span>
-              <Link className={styles.link} href="/forgot-password">
+
+        <form onSubmit={submit} noValidate className="space-y-4">
+          <AuthInput
+            id="identifier"
+            name="identifier"
+            label="Email atau nomor ponsel"
+            icon={AtSign}
+            placeholder="nama@email.com atau 0812xxxx"
+            autoComplete="username"
+            required
+          />
+          <AuthInput
+            id="password"
+            name="password"
+            label="Kata sandi"
+            icon={Lock}
+            type={show ? "text" : "password"}
+            placeholder="Masukkan kata sandi"
+            autoComplete="current-password"
+            required
+            labelExtra={
+              <Link
+                href="/forgot-password"
+                className={`text-sm font-semibold !text-[#0B4F3F] underline-offset-4 hover:underline ${focus}`}
+              >
                 Lupa kata sandi?
               </Link>
-            </span>
-            <div className={`${styles.inputWrap} ${styles.withLeftIcon}`}>
-              <Lock className={styles.inputIcon} size={18} />
-              <input
-                name="password"
-                type={show ? "text" : "password"}
-                placeholder="Masukkan kata sandi"
-                autoComplete="current-password"
-                required
+            }
+            end={
+              <PasswordToggle
+                shown={show}
+                onToggle={() => setShow((v) => !v)}
               />
-              <button
-                type="button"
-                className={styles.eye}
-                onClick={() => setShow((value) => !value)}
-                aria-label="Tampilkan atau sembunyikan kata sandi"
-              >
-                {show ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </label>
-          <label className={styles.check}>
-            <input type="checkbox" name="remember" />
+            }
+          />
+
+          <label className="flex cursor-pointer items-center gap-2.5 text-sm">
+            <input
+              type="checkbox"
+              name="remember"
+              className="h-4 w-4 cursor-pointer accent-[#0B4F3F]"
+            />
             Ingat saya di perangkat ini
           </label>
-          {error && <div className={styles.error}>{error}</div>}
-          <button className={styles.primaryButton} disabled={loading}>
-            {loading ? "Memproses..." : "Masuk ke Akun Saya"}
-            <ArrowRight size={17} />
+
+          {error && (
+            <div
+              role="alert"
+              className="rounded-xl bg-[#FBEDE8] p-3.5 text-sm leading-relaxed text-[#B4432B]"
+            >
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`${btnPrimary} !min-h-12 sm:!w-full`}
+          >
+            {loading ? (
+              <>
+                <Loader2
+                  size={17}
+                  className="animate-spin motion-reduce:animate-none"
+                />
+                Memproses...
+              </>
+            ) : (
+              <>
+                Masuk ke akun saya <ArrowRight size={17} />
+              </>
+            )}
           </button>
         </form>
-        <div className={styles.callout}>
+
+        <p className="mt-6 rounded-xl bg-[#F7F8F7] p-4 text-center text-sm text-[#5B6675]">
           Belum punya akun?{" "}
-          <Link className={styles.link} href="/register">
-            Daftar Akun Baru
+          <Link
+            href="/register"
+            className={`font-semibold !text-[#0B4F3F] underline-offset-4 hover:underline ${focus}`}
+          >
+            Daftar akun baru
           </Link>
-        </div>
-        <div className={styles.secure}>
-          <ShieldCheck size={15} color="#2f8f68" />
+        </p>
+        <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-[#5B6675]">
+          <ShieldCheck size={15} className="text-[#12705A]" />
           Dilindungi enkripsi dan Smart Escrow Vault
-        </div>
+        </p>
       </section>
+      {toast}
     </AuthShell>
   );
 }
