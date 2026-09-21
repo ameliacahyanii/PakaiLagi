@@ -123,9 +123,11 @@ export function MarketplaceHeader() {
   const router = useRouter();
   const { user, ready } = useAuthUser();
 
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   async function logout() {
     await createClient().auth.signOut();

@@ -17,6 +17,7 @@ import {
   MarketplaceHeader,
 } from "@/components/marketplace/MarketplaceShell";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
 /* ---------- Style tokens (shared dengan halaman lain) ---------- */
 const display = "font-[family-name:var(--font-display,Georgia,serif)]";
@@ -159,7 +160,7 @@ export default function ProductDetailPage() {
           {/* ============ Kolom kiri ============ */}
           <div className="flex flex-col gap-6">
             <section className={card}>
-              <img
+              <Image
                 src={images[active][1]}
                 alt={images[active][0]}
                 className="aspect-[4/3] w-full rounded-xl object-cover"
@@ -178,7 +179,7 @@ export default function ProductDetailPage() {
                         isActive ? "border-[#0B4F3F]" : "border-transparent"
                       }`}
                     >
-                      <img
+                      <Image
                         src={image[1]}
                         alt=""
                         className="aspect-square w-full object-cover"

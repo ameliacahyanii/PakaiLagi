@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
-import { Heart, ImageOff, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import type { DiscoverProduct } from "@/data/discover-products";
+import Image from "next/image";
 
 const rupiah = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -19,9 +20,10 @@ export function DiscoverCard({ product }: { product: DiscoverProduct }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-[#E4E7EB] bg-white shadow-[0_1px_2px_rgba(17,24,39,0.04)] transition-shadow hover:shadow-[0_10px_28px_-14px_rgba(17,24,39,0.18)]">
       <div className="relative aspect-[4/3] w-full bg-[#F3F4F2]">
-        <img
+        <Image
           src={product.image}
           alt={product.title}
+          fill
           className="absolute inset-0 h-full w-full object-cover"
         />
         <span className="absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#0B4F3F] backdrop-blur-sm">

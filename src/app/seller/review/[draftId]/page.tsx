@@ -31,6 +31,7 @@ import {
   textarea,
   toastBox,
 } from "@/components/ui/tokens";
+import Image from "next/image";
 
 const cx = (...v: (string | false | null | undefined)[]) =>
   v.filter(Boolean).join(" ");
@@ -196,7 +197,7 @@ export default function DraftReviewPage() {
                 </div>
 
                 <figure className="relative mt-5 overflow-hidden rounded-2xl bg-[#ECEEEB]">
-                  <img
+                  <Image
                     src={images[0]}
                     alt="Audio-Technica ATH-M50x hasil inspeksi"
                     className="aspect-[4/3] w-full object-cover"
@@ -211,7 +212,7 @@ export default function DraftReviewPage() {
 
                 <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {images.slice(1).map((src, i) => (
-                    <img
+                    <Image
                       key={src}
                       src={src}
                       alt={`Foto inspeksi ${i + 2}`}

@@ -16,11 +16,13 @@ export function ProductCard({ product }: { product: MarketplaceProduct }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-[15px] bg-white shadow-[0_3px_14px_#2334310d] transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_12px_28px_#23343117]">
       <div className="relative aspect-[4/3] overflow-hidden bg-[#def2ed] group">
-        <Link href={`/items/${product.id}`}>
+        <Link href={`/items/${product.id}`} className="block h-full w-full">
           <Image
             src={product.image}
             alt={product.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
           />
         </Link>
         <span className="absolute left-3 top-3 rounded-full bg-[#176b5b] px-2.5 py-1.5 text-xs font-extrabold text-white">
