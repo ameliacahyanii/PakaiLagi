@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, Check, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { marketplaceListings } from "@/lib/marketplace/data";
 import { createClient } from "@/lib/supabase/client";
@@ -12,6 +13,7 @@ export default function MarketplaceDetail({
 }: {
   params: { id: string };
 }) {
+  const router = useRouter();
   const listing =
     marketplaceListings.find((item) => item.id === params.id) ??
     marketplaceListings[0];
@@ -28,7 +30,7 @@ export default function MarketplaceDetail({
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      window.location.href = "/auth";
+      router.push("/auth");
       return;
     }
     if (!/^[0-9a-f-]{36}$/i.test(listing.id)) {

@@ -101,7 +101,6 @@ type Bubble = {
   attachments?: string[];
 };
 
-// Riwayat lengkap hanya tersedia untuk percakapan Rian (data contoh)
 const rianThread: Bubble[] = [
   {
     from: "buyer",

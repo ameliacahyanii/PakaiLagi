@@ -27,6 +27,7 @@ import {
   pageBg,
   toastBox,
 } from "@/components/ui/tokens";
+import Image from "next/image";
 
 /* Helper kecil untuk merangkai class bersyarat.
    Kalau nanti dipakai di banyak halaman, pindahkan saja ke lib/ui. */
@@ -297,7 +298,7 @@ export default function SellerOrderPage() {
                 </div>
 
                 <div className="mt-6 flex flex-col gap-5 sm:flex-row">
-                  <img
+                  <Image
                     src={product}
                     alt="Sony Alpha A6000 dalam kemasan reusable"
                     className="h-44 w-full rounded-2xl object-cover sm:w-44"
@@ -457,7 +458,7 @@ export default function SellerOrderPage() {
                   <p className="font-semibold">Hari ini, 16.30 – 18.00 WIB</p>
                 </div>
                 <div className="mt-5 flex items-center gap-3 border-t border-[#E4E7EB] pt-4">
-                  <img
+                  <Image
                     src={courier}
                     alt="Hendra Wijaya"
                     className="h-11 w-11 rounded-full object-cover"

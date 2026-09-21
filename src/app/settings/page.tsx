@@ -28,6 +28,7 @@ import {
   MarketplaceFooter,
   MarketplaceHeader,
 } from "@/components/marketplace/MarketplaceShell";
+import Image from "next/image";
 
 const display = "font-[family-name:var(--font-display,Georgia,serif)]";
 const body = "font-[family-name:var(--font-body,system-ui,sans-serif)]";
@@ -192,7 +193,7 @@ export default function SettingsPage() {
             <section className={`${card} p-5`}>
               <div className="flex items-center gap-3">
                 {avatar ? (
-                  <img
+                  <Image
                     src={avatar}
                     alt="Budi Santoso"
                     className="h-14 w-14 shrink-0 rounded-full object-cover"
@@ -276,7 +277,7 @@ export default function SettingsPage() {
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                 {avatar ? (
-                  <img
+                  <Image
                     src={avatar}
                     alt="Preview avatar"
                     className="h-20 w-20 shrink-0 rounded-full object-cover"

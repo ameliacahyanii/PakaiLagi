@@ -1,8 +1,10 @@
 "use client";
+import Link from "next/link";
 import {
   BadgeCheck,
   CheckCircle,
   ChevronDown,
+  ChevronRight,
   Leaf,
   MessageCircle,
   PackageCheck,
@@ -51,12 +53,10 @@ import {
   pageBg,
   segTab,
   segmented,
-  select,
-  selectIcon,
-  selectWrap,
   textarea,
   toastBox,
 } from "@/components/ui/tokens";
+import Image from "next/image";
 
 const sellerAvatar =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuC89Ju9TrM9Qsk6N1abB41TMpGJZvYoy4MHvvZoSgokOoipLvmiX0CC0KtlFlv_bXKojBN1V1uVtQ-fN3kt8PCzpQ1r7m9Ny0e3HBJFajwzkDygE8Ss8Czpq9jrcTbLXDd7woKRC-mh7h9RR3FyCYypo-wjnDcQ_yP8pK4cfsPlRJIJwSN56po7ZzQtsrzTTHrqOagPryGh9k3mYPdKW6Etl2Riao48oz48_dPZO1ipWnah_oor3StK";
@@ -280,6 +280,34 @@ export default function SellerProfilePage() {
     <div className={pageBg}>
       <MarketplaceHeader />
 
+      {/* ============ Breadcrumb ============ */}
+      <div className="border-b border-[#E4E7EB] bg-white">
+        <div className={container}>
+          <nav
+            aria-label="Navigasi breadcrumb"
+            className="flex items-center gap-1.5 py-3 text-sm text-[#5B6675]"
+          >
+            <Link
+              href="/"
+              className={`rounded font-medium transition-colors hover:text-[#0B4F3F] ${focus}`}
+            >
+              Beranda
+            </Link>
+            <ChevronRight size={14} className="shrink-0 text-[#CBD0D6]" />
+            <Link
+              href="/explore"
+              className={`rounded font-medium transition-colors hover:text-[#0B4F3F] ${focus}`}
+            >
+              Eksplorasi
+            </Link>
+            <ChevronRight size={14} className="shrink-0 text-[#CBD0D6]" />
+            <span className="truncate font-semibold text-[#111827]">
+              Rian Pratama
+            </span>
+          </nav>
+        </div>
+      </div>
+
       {/* ============ Hero ============ */}
       <section className="bg-[#0A3D31] pt-10 pb-24 sm:pt-12 sm:pb-28">
         <div className={container}>
@@ -301,7 +329,7 @@ export default function SellerProfilePage() {
         <section className={`${card} -mt-16 p-5 sm:-mt-20 sm:p-7`}>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <img
+              <Image
                 src={sellerAvatar}
                 alt="Rian Pratama"
                 className="h-20 w-20 shrink-0 rounded-full border-4 border-white object-cover shadow-[0_10px_28px_-14px_rgba(17,24,39,0.4)]"
@@ -477,7 +505,7 @@ export default function SellerProfilePage() {
               ))}
             </div>
           </div>
-          <img
+          <Image
             src={packagingImage}
             alt="Kemasan sirkular returnable"
             className="aspect-[4/3] w-full rounded-2xl object-cover"

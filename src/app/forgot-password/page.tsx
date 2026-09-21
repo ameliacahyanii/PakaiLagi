@@ -24,7 +24,6 @@ const RESEND_SECONDS = 60;
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const isPhone = (v: string) => /^\+?\d[\d\s-]{8,16}$/.test(v);
 
-// Samarkan identitas agar tidak terbuka penuh di layar
 function mask(value: string) {
   if (value.includes("@")) {
     const [name, domain] = value.split("@");

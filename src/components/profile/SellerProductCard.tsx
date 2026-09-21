@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckCircle, ShoppingCart } from "lucide-react";
 import type { SellerProduct } from "@/data/profile-data";
+import Image from "next/image";
 
 const money = (value: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -14,7 +15,7 @@ export function SellerProductCard({ product }: { product: SellerProduct }) {
     <article className="flex flex-col overflow-hidden rounded-[15px] bg-white p-3.5 shadow-[0_3px_14px_rgba(35,52,49,0.05)]">
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-[11px] bg-[#def2ed]">
-        <img
+        <Image
           src={product.image}
           alt={product.title}
           className="h-full w-full object-cover"

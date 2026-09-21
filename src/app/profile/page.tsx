@@ -21,6 +21,7 @@ import {
   MarketplaceHeader,
 } from "@/components/marketplace/MarketplaceShell";
 import { userOrders } from "@/data/profile-data";
+import Image from "next/image";
 
 /* ---------- Style tokens (shared dengan halaman lain) ---------- */
 const display = "font-[family-name:var(--font-display,Georgia,serif)]";
@@ -107,7 +108,7 @@ export default function UserProfilePage() {
                 <UserRound size={32} />
               </div>
             ) : (
-              <img
+              <Image
                 src={avatar}
                 alt="Budi Santoso"
                 onError={() => setAvatarFailed(true)}
@@ -264,7 +265,7 @@ export default function UserProfilePage() {
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
-                    <img
+                    <Image
                       src={order.image}
                       alt={order.title}
                       className="h-20 w-20 shrink-0 rounded-xl object-cover"

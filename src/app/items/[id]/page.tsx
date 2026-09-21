@@ -5,7 +5,6 @@ import {
   Leaf,
   MessageCircle,
   Share2,
-  ShieldCheck,
   ShoppingBag,
   Star,
   Truck,

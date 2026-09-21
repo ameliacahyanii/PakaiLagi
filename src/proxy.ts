@@ -1,6 +1,23 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+const PROTECTED = [
+  "/profile",
+  "/seller",
+  "/checkout",
+  "/chat",
+  "/settings",
+  "/status",
+  "/items",
+];
+
+const PROTECTED_PATTERNS = [/^\/marketplace\/[^/]+\/(chat|checkout)(\/|$)/];
+
+const AUTH_PAGES = ["/login", "/register"];
+
+const matches = (path: string, list: string[]) =>
+  list.some((p) => path === p || path.startsWith(`${p}/`));
+
 export async function proxy(request: NextRequest) {
   const isUiPreviewMode =
     process.env.NODE_ENV === "development" &&
@@ -24,9 +41,7 @@ export async function proxy(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-
           response = NextResponse.next({ request });
-
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options),
           );
@@ -39,22 +54,28 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isProtectedRoute =
-    request.nextUrl.pathname.startsWith("/dashboard") ||
-    request.nextUrl.pathname.startsWith("/items") ||
-    request.nextUrl.pathname.startsWith("/profile") ||
-    request.nextUrl.pathname.startsWith("/admin");
+  const path = request.nextUrl.pathname;
+  const needsLogin =
+    matches(path, PROTECTED) || PROTECTED_PATTERNS.some((r) => r.test(path));
 
-  if (!user && isProtectedRoute) {
+  // Tamu membuka halaman yang butuh akun: arahkan ke login
+  if (!user && needsLogin) {
     const url = request.nextUrl.clone();
-
-    url.pathname = "/auth";
-    url.searchParams.set("next", request.nextUrl.pathname);
-
+    url.pathname = "/login";
+    url.search = `?next=${encodeURIComponent(path + request.nextUrl.search)}`;
     return NextResponse.redirect(url);
   }
 
-  if (user && request.nextUrl.pathname.startsWith("/admin")) {
+  // Sudah login tapi buka /login atau /register: kembali ke beranda
+  if (user && matches(path, AUTH_PAGES)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
+  // Area admin: cek role di tabel profiles
+  if (user && matches(path, ["/admin"])) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -62,7 +83,7 @@ export async function proxy(request: NextRequest) {
       .maybeSingle();
 
     if (profile?.role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
@@ -71,9 +92,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/items/:path*",
-    "/profile/:path*",
-    "/admin/:path*",
+    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

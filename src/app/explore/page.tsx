@@ -270,10 +270,7 @@ function ExplorePageContent() {
     sort,
   ]);
 
-  // Kembali ke halaman 1 setiap kali filter atau urutan berubah.
-  useEffect(() => {
-    setPage(1);
-  }, [
+  const filterKey = JSON.stringify({
     category,
     maximumPrice,
     minimumPrice,
@@ -281,7 +278,13 @@ function ExplorePageContent() {
     query,
     selectedPaths,
     sort,
-  ]);
+  });
+
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setPage(1);
+  }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);

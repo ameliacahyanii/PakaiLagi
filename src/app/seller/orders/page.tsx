@@ -45,6 +45,7 @@ import {
   segmented,
   toastBox,
 } from "@/components/ui/tokens";
+import Image from "next/image";
 
 type Option = { value: string; label: string };
 
@@ -418,7 +419,7 @@ export default function SellerOrdersPage() {
 
                     <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.5fr_1fr_14rem] lg:items-center">
                       <div className="flex gap-4">
-                        <img
+                        <Image
                           src={order.image}
                           alt={order.product}
                           className="h-20 w-20 shrink-0 rounded-xl object-cover"

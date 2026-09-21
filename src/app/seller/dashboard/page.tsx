@@ -15,6 +15,7 @@ import {
 import { useMemo, useState } from "react";
 import { SellerShell } from "@/components/seller/SellerShell";
 import { inventoryItems, InventoryStatus } from "@/data/seller-workspace-data";
+import Image from "next/image";
 
 /* ---------- Style tokens — identik dengan halaman lain ---------- */
 const display = "font-[family-name:var(--font-display,Georgia,serif)]";
@@ -230,7 +231,7 @@ export default function SellerDashboard() {
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <img
+                          <Image
                             src={item.image}
                             alt={item.name}
                             className="h-11 w-11 shrink-0 rounded-lg object-cover"

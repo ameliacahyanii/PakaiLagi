@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { ArrowRight, AtSign, Loader2, Lock, ShieldCheck } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { AuthInput, PasswordToggle } from "@/components/auth/AuthField";
 import { GoogleIcon } from "@/components/auth/GoogleIcon";
@@ -13,37 +14,71 @@ import {
   display,
   focus,
 } from "@/components/ui/tokens";
-import { useToast } from "@/components/ui/useToast";
+
+function translateError(message: string) {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials"))
+    return "Email atau kata sandi salah.";
+  if (m.includes("email not confirmed"))
+    return "Email belum dikonfirmasi. Cek inbox kamu terlebih dahulu.";
+  if (m.includes("provider"))
+    return "Google OAuth belum diaktifkan di Supabase Dashboard.";
+  return message;
+}
 
 export default function LoginPage() {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { notify, toast } = useToast();
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current);
-    },
-    [],
-  );
+  async function handleGoogle() {
+    setError("");
+    setLoading(true);
+    const supabase = createClient();
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (oauthError) {
+      setError(translateError(oauthError.message));
+      setLoading(false);
+    }
+  }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const identifier = String(data.get("identifier") || "").trim();
     const password = String(data.get("password") || "");
-    if (!identifier || password.length < 8) {
-      setError(
-        "Masukkan email atau nomor ponsel dan kata sandi minimal 8 karakter.",
-      );
+
+    if (!identifier || password.length < 6) {
+      setError("Masukkan email dan kata sandi minimal 6 karakter.");
       return;
     }
+    if (!identifier.includes("@")) {
+      setError("Login dengan nomor ponsel belum tersedia, gunakan email.");
+      return;
+    }
+
     setError("");
     setLoading(true);
-    timer.current = setTimeout(() => router.push("/"), 700);
+    const supabase = createClient();
+    const { data: result, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email: identifier,
+        password,
+      });
+
+    if (signInError) {
+      setError(translateError(signInError.message));
+      setLoading(false);
+      return;
+    }
+
+    const role = result.user?.user_metadata?.role;
+    router.push(role === "seller" ? "/seller/dashboard" : "/");
+    router.refresh();
   }
 
   return (
@@ -60,7 +95,8 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={() => notify("Login Google belum tersedia di versi contoh.")}
+          onClick={handleGoogle}
+          disabled={loading}
           className={`${btnSecondary} mt-6 !min-h-12 sm:!w-full`}
         >
           <GoogleIcon />
@@ -77,9 +113,10 @@ export default function LoginPage() {
           <AuthInput
             id="identifier"
             name="identifier"
-            label="Email atau nomor ponsel"
+            label="Email"
             icon={AtSign}
-            placeholder="nama@email.com atau 0812xxxx"
+            type="email"
+            placeholder="nama@email.com"
             autoComplete="username"
             required
           />
@@ -161,7 +198,6 @@ export default function LoginPage() {
           Dilindungi enkripsi dan Smart Escrow Vault
         </p>
       </section>
-      {toast}
     </AuthShell>
   );
 }

@@ -10,8 +10,9 @@ import {
   Store,
   User,
 } from "lucide-react";
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { AuthInput, PasswordToggle } from "@/components/auth/AuthField";
 import { GoogleIcon } from "@/components/auth/GoogleIcon";
@@ -23,7 +24,6 @@ import {
   focus,
   input,
 } from "@/components/ui/tokens";
-import { useToast } from "@/components/ui/useToast";
 
 type Role = "buyer" | "seller";
 
@@ -60,16 +60,8 @@ export default function RegisterPage() {
   const [show, setShow] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const { notify, toast } = useToast();
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current);
-    },
-    [],
-  );
 
   const strength = useMemo(
     () => [
@@ -85,8 +77,36 @@ export default function RegisterPage() {
   const score = strength.filter((s) => s.ok).length;
   const mismatch = confirm.length > 0 && password !== confirm;
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function handleGoogle() {
+    setError("");
+    setMessage("");
+    setLoading(true);
+    const supabase = createClient();
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (oauthError) {
+      setError(
+        oauthError.message.toLowerCase().includes("provider")
+          ? "Google OAuth belum diaktifkan di Supabase Dashboard."
+          : oauthError.message,
+      );
+      setLoading(false);
+    }
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const name = String(form.get("name") || "").trim();
+    const phone = String(form.get("phone") || "").replace(/\D/g, "");
+    const email = String(form.get("email") || "").trim();
+
+    if (!name || !email) {
+      setError("Nama lengkap dan email wajib diisi.");
+      return;
+    }
     if (score < 3) {
       setError("Kata sandi harus memenuhi seluruh persyaratan keamanan.");
       return;
@@ -99,12 +119,43 @@ export default function RegisterPage() {
       setError("Anda harus menyetujui ketentuan layanan.");
       return;
     }
+
     setError("");
+    setMessage("");
     setLoading(true);
-    timer.current = setTimeout(
-      () => router.push(role === "seller" ? "/seller/dashboard" : "/"),
-      500,
-    );
+
+    const supabase = createClient();
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          phone: phone ? `+62${phone.replace(/^0/, "")}` : "",
+          role,
+        },
+      },
+    });
+
+    if (signUpError) {
+      setError(
+        signUpError.message.toLowerCase().includes("already registered")
+          ? "Email sudah terdaftar. Silakan masuk."
+          : signUpError.message,
+      );
+      setLoading(false);
+      return;
+    }
+
+    // Kalau konfirmasi email dimatikan, session langsung ada
+    if (data.session) {
+      router.push(role === "seller" ? "/seller/dashboard" : "/");
+      router.refresh();
+      return;
+    }
+
+    setMessage("Akun berhasil dibuat. Cek email untuk konfirmasi, lalu masuk.");
+    setLoading(false);
   }
 
   return (
@@ -122,9 +173,8 @@ export default function RegisterPage() {
 
         <button
           type="button"
-          onClick={() =>
-            notify("Daftar dengan Google belum tersedia di versi contoh.")
-          }
+          onClick={handleGoogle}
+          disabled={loading}
           className={`${btnSecondary} mt-6 !min-h-12 sm:!w-full`}
         >
           <GoogleIcon />
@@ -339,6 +389,15 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {message && (
+            <div
+              role="status"
+              className="rounded-xl bg-[#E6F2ED] p-3.5 text-sm leading-relaxed text-[#0B4F3F]"
+            >
+              {message}
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -370,7 +429,6 @@ export default function RegisterPage() {
           </Link>
         </p>
       </section>
-      {toast}
     </AuthShell>
   );
 }
